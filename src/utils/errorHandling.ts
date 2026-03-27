@@ -17,20 +17,9 @@ export function validateResume(resume: {
   experience: string[];
   skills: string[];
 }): void {
-  if (!resume.name || resume.name.trim().length < 2) {
-    throw new ValidationError('Name must be at least 2 characters long');
-  }
-
-  if (!resume.contact || !resume.contact.includes('@')) {
-    throw new ValidationError('Please provide a valid contact email');
-  }
-
-  if (resume.experience.length === 0) {
-    throw new ValidationError('Please add at least one professional experience');
-  }
-
-  if (resume.skills.length === 0) {
-    throw new ValidationError('Please add at least one skill');
+  // For now, we'll only validate that a name exists since we're using PDF upload
+  if (!resume.name) {
+    throw new ValidationError('Please upload a valid PDF file');
   }
 }
 

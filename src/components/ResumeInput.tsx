@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Resume } from '../types/interfaces';
 
 interface ResumeInputProps {
@@ -6,19 +6,37 @@ interface ResumeInputProps {
 }
 
 export const ResumeInput: React.FC<ResumeInputProps> = ({ onSubmit }) => {
-  const [name, setName] = useState('');
-  const [contact, setContact] = useState('');
-  const [experience, setExperience] = useState('');
-  const [skills, setSkills] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      if (selectedFile.type === 'application/pdf') {
+        setFile(selectedFile);
+      } else {
+        alert('Please upload a PDF file');
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!file) {
+      alert('Please select a PDF file');
+      return;
+    }
 
+    // TODO: Implement PDF parsing logic here
+    // For now, we'll use placeholder data
     const resume: Resume = {
-      name,
-      contact,
-      experience: experience.split('\n').filter(exp => exp.trim() !== ''),
-      skills: skills.split(',').map(skill => skill.trim())
+      name: file.name.replace('.pdf', ''),
+      contact: '',
+      experience: [],
+      skills: []
     };
 
     onSubmit(resume);
@@ -26,36 +44,25 @@ export const ResumeInput: React.FC<ResumeInputProps> = ({ onSubmit }) => {
 
   return (
     <div className="resume-input">
-      <h2>Resume Details</h2>
+      <h2>Upload Resume</h2>
       <form onSubmit={handleSubmit}>
-        <input 
-          type="text" 
-          placeholder="Full Name" 
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input 
-          type="text" 
-          placeholder="Contact Information" 
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-          required
-        />
-        <textarea 
-          placeholder="Professional Experience (one per line)" 
-          value={experience}
-          onChange={(e) => setExperience(e.target.value)}
-          required
-        />
-        <input 
-          type="text" 
-          placeholder="Skills (comma-separated)" 
-          value={skills}
-          onChange={(e) => setSkills(e.target.value)}
-          required
-        />
-        <button type="submit">Optimize Resume</button>
+        <div className="file-upload">
+          <label htmlFor="resume-file">Upload your resume (PDF)</label>
+          <input
+            id="resume-file"
+            type="file"
+            accept=".pdf"
+            onChange={handleFileChange}
+            ref={fileInputRef}
+            required
+          />
+          <p className="file-info">
+            {file ? `Selected file: ${file.name}` : 'No file selected'}
+          </p>
+        </div>
+        <button type="submit" disabled={!file}>
+          Optimize Resume
+        </button>
       </form>
     </div>
   );
