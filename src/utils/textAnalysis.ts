@@ -1,17 +1,7 @@
-import natural from 'natural';
-
-const { WordTokenizer, BayesClassifier } = natural;
-
 export class TextAnalyzer {
-  private tokenizer: natural.WordTokenizer;
-
-  constructor() {
-    this.tokenizer = new WordTokenizer();
-  }
-
   // Tokenize text into individual words
   tokenize(text: string): string[] {
-    return this.tokenizer.tokenize(text.toLowerCase()) || [];
+    return text.toLowerCase().match(/\b\w+\b/g) || [];
   }
 
   // Calculate keyword match percentage
