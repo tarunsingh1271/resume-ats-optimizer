@@ -14,4 +14,5 @@ export interface Resume {
 export interface OptimizationResult {
   score: number;
   recommendations: string[];
+  rewritten_resume: string;
 }
